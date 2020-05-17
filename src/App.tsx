@@ -1,6 +1,23 @@
 import React, { useEffect } from 'react';
 import './App.scss';
 
+class Transition {
+  black: number | undefined;
+  white: number | undefined;
+  position: number;
+  nextPosition: number | undefined;
+  constructor(current: number, black: number | undefined, white: number | undefined, next: number | undefined) {
+    this.position = current;
+    this.black = black;
+    this.white = white;
+    this.nextPosition = next;
+  }
+
+  toString() {
+    return `Current: ${this.position}; By Black: ${this.black}; By white: ${this.white}; Next: ${this.nextPosition}`;
+  }
+}
+
 enum FieldPossibleValues {
   UNDEFINED = 0,
   WHITE_SQUARE = -1,
@@ -10,6 +27,18 @@ enum FieldPossibleValues {
 enum StateMachineTransitions {
   IDLE = 0,
   TRANSITION = 1,
+}
+
+enum StateMatrixTransitions {
+  UNDEFINED = 0,
+  LEFT_O = 1,
+  LEFT_X = 2,
+  LEFT_TOP_O = 4,
+  LEFT_TOP_X = 8,
+  LEFT_O_TOP_X = 16,
+  LEFT_X_TOP_O = 32,
+  LEFT_O_TOP_O = 64,
+  LEFT_X_TOP_X = 128,
 }
 
 function App() {
@@ -44,6 +73,7 @@ function App() {
     // Let take first row for testing
     const currentFieldArray = Field[0];
     const currentDefinition = rows[0];
+    console.log(`(${currentDefinition})    ${currentFieldArray}`);
 
     const StateMachine = [];
 
@@ -59,20 +89,38 @@ function App() {
 
     StateMachine.push(StateMachineTransitions.IDLE);
 
+    const StateMachineTransitioner = [];
+
     for(let ii = 0; ii < StateMachine.length - 2; ii++) {
       const current = StateMachine[ii];
       const next = StateMachine[ii + 1];
 
       if (current === 0 && next === 1) {
-        console.log('Переход');
+        StateMachineTransitioner.push(new Transition(ii, 1, 0, ii + 1));
       } else if (current === 1 && next === 1) {
-        console.log('переход с пред X');
+        StateMachineTransitioner.push(new Transition(ii, 1, undefined, ii + 1));
       } else if (current === 1 && next === 0) {
-        console.log('Обратный переход');
+        StateMachineTransitioner.push(new Transition(ii, undefined, 0, ii + 1));
       }
     }
 
-    console.log(StateMachine);
+    StateMachineTransitioner.push(new Transition(StateMachine.length - 2, undefined, 0, undefined));
+
+    StateMachineTransitioner.forEach(s => console.log(s.toString()));
+
+    const StateMatrix = [];
+    // Fill State matrix undefined elements
+    for (let ii = 0; ii < currentFieldArray.length; ii++) {
+      const row = [];
+      for (let jj = 0; jj < StateMachine.length; jj++) {
+        row.push(StateMatrixTransitions.UNDEFINED);
+      }
+      StateMatrix.push(row);
+    }
+
+
+    console.log(Field);
+    console.log(StateMatrix);
   }, []);
   return (
     <div className="app">
