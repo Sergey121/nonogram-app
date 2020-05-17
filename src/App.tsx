@@ -2,19 +2,17 @@ import React, { useEffect } from 'react';
 import './App.scss';
 
 class Transition {
-  black: number | undefined;
-  white: number | undefined;
-  position: number;
-  nextPosition: number | undefined;
-  constructor(current: number, black: number | undefined, white: number | undefined, next: number | undefined) {
-    this.position = current;
-    this.black = black;
-    this.white = white;
-    this.nextPosition = next;
+  currentPosition : number | undefined;
+  nextByX : number | undefined;
+  nextByO : number | undefined;
+  constructor(currentPosition: number, nextByX: number | undefined, nextByO: number | undefined) {
+    this.currentPosition = currentPosition;
+    this.nextByX = nextByX;
+    this.nextByO = nextByO;
   }
 
   toString() {
-    return `Current: ${this.position}; By Black: ${this.black}; By white: ${this.white}; Next: ${this.nextPosition}`;
+    return `Current: ${this.currentPosition}; X: ${this.nextByX}; O: ${this.nextByO}`;
   }
 }
 
@@ -72,7 +70,7 @@ function App() {
 
     // Let take first row for testing
     const currentFieldArray = Field[0];
-    const currentDefinition = rows[0];
+    const currentDefinition = rows[2];
     console.log(`(${currentDefinition})    ${currentFieldArray}`);
 
     const StateMachine = [];
@@ -96,31 +94,71 @@ function App() {
       const next = StateMachine[ii + 1];
 
       if (current === 0 && next === 1) {
-        StateMachineTransitioner.push(new Transition(ii, 1, 0, ii + 1));
+        StateMachineTransitioner.push(new Transition(ii, ii + 1, ii));
       } else if (current === 1 && next === 1) {
-        StateMachineTransitioner.push(new Transition(ii, 1, undefined, ii + 1));
+        StateMachineTransitioner.push(new Transition(ii, ii + 1, undefined));
       } else if (current === 1 && next === 0) {
-        StateMachineTransitioner.push(new Transition(ii, undefined, 0, ii + 1));
+        StateMachineTransitioner.push(new Transition(ii, undefined, ii + 1));
       }
     }
 
-    StateMachineTransitioner.push(new Transition(StateMachine.length - 2, undefined, 0, undefined));
+    StateMachineTransitioner.push(new Transition(StateMachine.length - 2, undefined, StateMachine.length - 2));
 
     StateMachineTransitioner.forEach(s => console.log(s.toString()));
 
     const StateMatrix = [];
     // Fill State matrix undefined elements
-    for (let ii = 0; ii < currentFieldArray.length; ii++) {
+    for (let ii = 0; ii < StateMachineTransitioner.length; ii++) {
       const row = [];
-      for (let jj = 0; jj < StateMachine.length; jj++) {
+      for (let jj = 0; jj < currentFieldArray.length; jj++) {
         row.push(StateMatrixTransitions.UNDEFINED);
       }
       StateMatrix.push(row);
     }
 
+    // Try to fill matrix
+    // Start for available elements from 0;
 
-    console.log(Field);
-    console.log(StateMatrix);
+    const couldBeInPosition = [0];
+
+    // for (let position = 0; position < currentFieldArray.length; position++) {
+    //   const currentFieldValue = currentFieldArray[position];
+    //
+    //   while (couldBeInPosition.length) {
+    //     const currentPosition = couldBeInPosition.pop() as number;
+    //     const stateMachineValueForPosition = StateMachineTransitioner[currentPosition];
+    //
+    //     switch (currentFieldValue) {
+    //       case FieldPossibleValues.UNDEFINED: {
+    //         if (stateMachineValueForPosition.nextByO !== undefined) {
+    //           if (stateMachineValueForPosition.currentPosition === stateMachineValueForPosition.nextByO) {
+    //             StateMatrix[stateMachineValueForPosition.nextByO][position] += StateMatrixTransitions.LEFT_O;
+    //           } else {
+    //             StateMatrix[stateMachineValueForPosition.nextByO][position] += StateMatrixTransitions.LEFT_TOP_O;
+    //           }
+    //         }
+    //
+    //         if (stateMachineValueForPosition.nextByX !== undefined) {
+    //           if (stateMachineValueForPosition.currentPosition === stateMachineValueForPosition.nextByX) {
+    //             StateMatrix[stateMachineValueForPosition.nextByX][position] += StateMatrixTransitions.LEFT_X;
+    //           } else {
+    //             StateMatrix[stateMachineValueForPosition.nextByX][position] += StateMatrixTransitions.LEFT_TOP_X;
+    //           }
+    //         }
+    //         break;
+    //       }
+    //       case FieldPossibleValues.BLACK_SQUARE: {
+    //         break;
+    //       }
+    //       case FieldPossibleValues.WHITE_SQUARE: {
+    //         break;
+    //       }
+    //     }
+    //   }
+    // }
+
+    console.log('Field', Field);
+    console.log('StateMatrix', StateMatrix);
   }, []);
   return (
     <div className="app">
