@@ -16,6 +16,8 @@ class Transition {
   }
 }
 
+type StateMachineMatrix = Array<Array<Array<number>>>;
+
 enum FieldPossibleValues {
   UNDEFINED = 0,
   WHITE_SQUARE = -1,
@@ -70,7 +72,7 @@ function App() {
 
     // Let take first row for testing
     const currentFieldArray = Field[0];
-    const currentDefinition = rows[2];
+    const currentDefinition = rows[0];
     console.log(`(${currentDefinition})    ${currentFieldArray}`);
 
     const StateMachine = [];
@@ -127,7 +129,6 @@ function App() {
       const nextStateAvailablePositions: number[] = [];
 
       couldBeInPosition.forEach((statePositionIndex) => {
-        debugger
         const stateMachineValueForPosition = StateMachineTransitioner[statePositionIndex as number];
 
         switch (currentFieldValue) {
@@ -152,9 +153,25 @@ function App() {
             break;
           }
           case FieldPossibleValues.BLACK_SQUARE: {
+            if (stateMachineValueForPosition.nextByX !== undefined) {
+              if (stateMachineValueForPosition.currentPosition === stateMachineValueForPosition.nextByX) {
+                StateMatrix[stateMachineValueForPosition.nextByX][column].push(StateMatrixTransitions.LEFT_X);
+              } else {
+                StateMatrix[stateMachineValueForPosition.nextByX][column].push(StateMatrixTransitions.LEFT_TOP_X);
+              }
+              nextStateAvailablePositions.push(stateMachineValueForPosition.nextByX);
+            }
             break;
           }
           case FieldPossibleValues.WHITE_SQUARE: {
+            if (stateMachineValueForPosition.nextByO !== undefined) {
+              if (stateMachineValueForPosition.currentPosition === stateMachineValueForPosition.nextByO) {
+                StateMatrix[stateMachineValueForPosition.nextByO][column].push(StateMatrixTransitions.LEFT_O);
+              } else {
+                StateMatrix[stateMachineValueForPosition.nextByO][column].push(StateMatrixTransitions.LEFT_TOP_O);
+              }
+              nextStateAvailablePositions.push(stateMachineValueForPosition.nextByO);
+            }
             break;
           }
         }
@@ -164,6 +181,75 @@ function App() {
 
       nextStateAvailablePositions.forEach(v => couldBeInPosition.add(v));
     }
+
+    // Check if exist
+    const rightBottomCorner = StateMatrix[StateMachineTransitioner.length - 1][currentFieldArray.length - 1];
+
+    // If array is empty then we can't reach end our state machine
+    if (rightBottomCorner.length === 0) {
+      throw new Error('No variants. Something went wrong');
+    }
+
+    // Try to create all available variants
+    const availableVariants: Array<Array<number>> = [];
+    let rowPosition = StateMachineTransitioner.length - 1;
+    let colPosition = currentFieldArray.length - 1;
+
+    function calculateVariant(rowNumber: number, colNumber: number, matrix: StateMachineMatrix, currentVariant: Array<number> = []) {
+      debugger
+      while (rowNumber !== -1 && colNumber !== -1) {
+        const cellArray = matrix[rowNumber][colNumber];
+        for(let ii = 0; ii < cellArray.length; ii++) {
+          const value = cellArray[ii];
+          const moreThenOneVariant = cellArray.length > 1;
+
+          switch (value) {
+            case StateMatrixTransitions.LEFT_O: {
+              currentVariant.push(FieldPossibleValues.WHITE_SQUARE);
+              colNumber = colNumber - 1;
+              if (moreThenOneVariant) {
+                calculateVariant(rowNumber, colNumber, matrix, moreThenOneVariant ? currentVariant.slice() : currentVariant);
+              }
+              break;
+            }
+            case StateMatrixTransitions.LEFT_X: {
+              currentVariant.push(FieldPossibleValues.BLACK_SQUARE);
+              colNumber = colNumber - 1;
+              if (moreThenOneVariant) {
+                calculateVariant(rowNumber, colNumber, matrix, moreThenOneVariant ? currentVariant.slice() : currentVariant);
+              }
+              break;
+            }
+            case StateMatrixTransitions.LEFT_TOP_O: {
+              currentVariant.push(FieldPossibleValues.WHITE_SQUARE);
+              rowNumber = rowNumber - 1;
+              colNumber = colNumber - 1;
+              if (moreThenOneVariant) {
+                calculateVariant(rowNumber, colNumber, matrix, moreThenOneVariant ? currentVariant.slice() : currentVariant);
+              }
+              break;
+            }
+            case StateMatrixTransitions.LEFT_TOP_X: {
+              currentVariant.push(FieldPossibleValues.BLACK_SQUARE);
+              rowNumber = rowNumber - 1;
+              colNumber = colNumber - 1;
+              if (moreThenOneVariant) {
+                calculateVariant(rowNumber, colNumber, matrix, moreThenOneVariant ? currentVariant.slice() : currentVariant);
+              }
+              break;
+            }
+            default: {
+              colNumber = colNumber - 1;
+              rowNumber = rowNumber - 1;
+            }
+          }
+        }
+      }
+
+      availableVariants.push(currentVariant);
+    }
+
+    calculateVariant(rowPosition, colPosition, StateMatrix);
 
     console.log('Field', Field);
     console.log('StateMatrix', StateMatrix);
@@ -177,6 +263,7 @@ function App() {
     });
 
     console.log(text);
+    console.log('Available variants', availableVariants);
   }, []);
   return (
     <div className="app">
