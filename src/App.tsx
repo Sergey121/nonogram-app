@@ -195,47 +195,39 @@ function App() {
     let rowPosition = StateMachineTransitioner.length - 1;
     let colPosition = currentFieldArray.length - 1;
 
-    function calculateVariant(rowNumber: number, colNumber: number, matrix: StateMachineMatrix, currentVariant: Array<number> = []) {
+    function calculateVariant(rowNumber: number, colNumber: number, matrix: StateMachineMatrix, currentVariant: Array<number> = [], cell: Array<number> = [], useCell = false) {
       debugger
       while (rowNumber !== -1 && colNumber !== -1) {
-        const cellArray = matrix[rowNumber][colNumber];
-        for(let ii = 0; ii < cellArray.length; ii++) {
-          const value = cellArray[ii];
-          const moreThenOneVariant = cellArray.length > 1;
+        const cellArray = useCell ? cell : matrix[rowNumber][colNumber];
+        useCell = false;
+        if (cellArray.length === 2) {
+          calculateVariant(rowNumber, colNumber, matrix, currentVariant.slice(), [cellArray[0]], true);
+          calculateVariant(rowNumber, colNumber, matrix, currentVariant.slice(), [cellArray[1]], true);
+          return;
+        } else {
+          const value = cellArray[0];
 
           switch (value) {
             case StateMatrixTransitions.LEFT_O: {
               currentVariant.push(FieldPossibleValues.WHITE_SQUARE);
               colNumber = colNumber - 1;
-              if (moreThenOneVariant) {
-                calculateVariant(rowNumber, colNumber, matrix, moreThenOneVariant ? currentVariant.slice() : currentVariant);
-              }
               break;
             }
             case StateMatrixTransitions.LEFT_X: {
               currentVariant.push(FieldPossibleValues.BLACK_SQUARE);
               colNumber = colNumber - 1;
-              if (moreThenOneVariant) {
-                calculateVariant(rowNumber, colNumber, matrix, moreThenOneVariant ? currentVariant.slice() : currentVariant);
-              }
               break;
             }
             case StateMatrixTransitions.LEFT_TOP_O: {
               currentVariant.push(FieldPossibleValues.WHITE_SQUARE);
               rowNumber = rowNumber - 1;
               colNumber = colNumber - 1;
-              if (moreThenOneVariant) {
-                calculateVariant(rowNumber, colNumber, matrix, moreThenOneVariant ? currentVariant.slice() : currentVariant);
-              }
               break;
             }
             case StateMatrixTransitions.LEFT_TOP_X: {
               currentVariant.push(FieldPossibleValues.BLACK_SQUARE);
               rowNumber = rowNumber - 1;
               colNumber = colNumber - 1;
-              if (moreThenOneVariant) {
-                calculateVariant(rowNumber, colNumber, matrix, moreThenOneVariant ? currentVariant.slice() : currentVariant);
-              }
               break;
             }
             default: {
@@ -246,7 +238,7 @@ function App() {
         }
       }
 
-      availableVariants.push(currentVariant);
+      availableVariants.push(currentVariant.reverse());
     }
 
     calculateVariant(rowPosition, colPosition, StateMatrix);
