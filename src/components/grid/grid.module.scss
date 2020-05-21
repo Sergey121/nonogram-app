@@ -1,0 +1,45 @@
+$color: rgb(175, 216, 248);
+
+.cell {
+  border: 1px solid $color;
+  background-color: white;
+  width: 25px;
+  height: 25px;
+}
+
+.row {
+
+}
+
+.empty {
+  &:after {
+    position: absolute;
+    left: 12.5px;
+    width: 4px;
+    height: 4px;
+    background-color: red;
+  }
+}
+
+.filled {
+  background-color: $color;
+  animation-name: fillAnimation;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@keyframes fillAnimation {
+  0% {
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

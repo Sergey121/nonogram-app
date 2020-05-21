@@ -1,0 +1,17 @@
+$color: #1abc9c;
+
+.btn {
+  border: none;
+  background-color: $color;
+  padding: 10px 15px;
+  color: white;
+  font-weight: 500;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  transition: color, 0.2s;
+
+  &:hover {
+    background-color: lighten($color, 10);
+  }
+}

@@ -32,16 +32,7 @@ const applyColumnResult = (array: FieldType, colIndex: number, result: Array<num
 };
 
 export const resolveNonogram = (rows: Array<Array<number>>, cols: Array<Array<number>>): FieldType => {
-  const Field: FieldType = [];
-
-  // Create empty field
-  for (let ii = 0; ii < rows.length; ii++) {
-    const row = [];
-    for (let jj = 0; jj < cols.length; jj++) {
-      row.push(FieldPossibleValues.UNDEFINED);
-    }
-    Field.push(row);
-  }
+  const Field = createField(rows, cols);
 
   let hasChanges;
 
@@ -70,6 +61,21 @@ export const resolveNonogram = (rows: Array<Array<number>>, cols: Array<Array<nu
       applyColumnResult(Field, colNumber, result);
     }
   } while (hasChanges);
+
+  return Field;
+};
+
+export const createField = (rows: Array<Array<number>>, cols: Array<Array<number>>): FieldType => {
+  const Field: FieldType = [];
+
+  // Create empty field
+  for (let ii = 0; ii < rows.length; ii++) {
+    const row = [];
+    for (let jj = 0; jj < cols.length; jj++) {
+      row.push(FieldPossibleValues.UNDEFINED);
+    }
+    Field.push(row);
+  }
 
   return Field;
 };
