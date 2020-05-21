@@ -1,15 +1,18 @@
 $color: rgb(12, 53, 71);
 $bg: rgb(175, 216, 248);
+$scannerColor: rgba(178, 67, 255, 0.75);
 
 .table {
   border-collapse: collapse;
+  position: relative;
 }
 
 .cell {
   border: 1px solid $bg;
   background-color: white;
   width: 25px;
-  height: 25px;
+  height: 25px;box-sizing: border-box;
+
 }
 
 .dotWrapper {
@@ -36,6 +39,17 @@ $bg: rgb(175, 216, 248);
 
 .row {
 
+}
+
+.scanner {
+  position: absolute;
+  height: 25px;
+  background: $scannerColor;
+  left: 0;
+  top: 0;
+  border: 1px solid $scannerColor;
+  box-sizing: border-box;
+  opacity: 0.5;
 }
 
 .empty {
