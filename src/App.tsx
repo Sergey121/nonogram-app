@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import './App.scss';
-import { tryResolveRow } from './utils';
+import { resolveNonogram, tryResolveRow } from './utils';
 
 function App() {
   useEffect(() => {
@@ -19,6 +19,9 @@ function App() {
       [1, 1],
       [2, 1],
     ];
+
+    const res = resolveNonogram(rows, cols);
+    console.log(res);
 
   }, []);
   return (

@@ -7,7 +7,31 @@ import {
   Transition
 } from '../models';
 
-export const resolveNonogram = (rows: Array<Array<number>>, cols: Array<Array<number>>) => {
+const isArraysEqual = (a: Array<number>, b: Array<number>) => {
+  for (let ii = 0; ii < a.length; ii++) {
+    if (a[ii] !== b[ii]) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const createRowFromColumn = (array: FieldType, colIndex: number): Array<number> => {
+  const result = [];
+  for (let row = 0; row < array.length; row++) {
+    result[row] = array[row][colIndex];
+  }
+  return result;
+};
+
+const applyColumnResult = (array: FieldType, colIndex: number, result: Array<number>): void => {
+  for (let row = 0; row < array.length; row++) {
+    array[row][colIndex] = result[row];
+  }
+};
+
+export const resolveNonogram = (rows: Array<Array<number>>, cols: Array<Array<number>>): FieldType => {
   const Field: FieldType = [];
 
   // Create empty field
@@ -19,7 +43,35 @@ export const resolveNonogram = (rows: Array<Array<number>>, cols: Array<Array<nu
     Field.push(row);
   }
 
+  let hasChanges;
 
+  do {
+    hasChanges = false;
+
+    // Go through rows
+    for (let rowNumber = 0; rowNumber < rows.length; rowNumber++) {
+      const row = Field[rowNumber];
+      const rowDefinition = rows[rowNumber];
+      const result = tryResolveRow(row, rowDefinition);
+      if (!isArraysEqual(row, result)) {
+        hasChanges = true;
+      }
+      Field.splice(rowNumber, 1, result);
+    }
+
+    // Go through columns
+    for (let colNumber = 0; colNumber < cols.length; colNumber++) {
+      const row = createRowFromColumn(Field, colNumber);
+      const colDefinition = cols[colNumber];
+      const result = tryResolveRow(row, colDefinition);
+      if (!isArraysEqual(row, result)) {
+        hasChanges = true;
+      }
+      applyColumnResult(Field, colNumber, result);
+    }
+  } while (hasChanges);
+
+  return Field;
 };
 
 export const tryResolveRow = (row: Array<number>, definition: Array<number>): Array<number> => {
@@ -87,7 +139,7 @@ const createStateMatrix = (transitions: Array<Transition>, rowDefinition: Array<
 const fillStateMatrix = (row: Array<number>, transitions: Array<Transition>, stateMatrix: StateMatrixType) => {
   const couldBeInPosition = new Set<number>();
   couldBeInPosition.add(0);
-debugger
+
   for (let column = 0; column < row.length; column++) {
     const currentFieldValue = row[column];
     const nextStateAvailablePositions: number[] = [];
