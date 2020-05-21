@@ -7,7 +7,7 @@ import {
   Transition
 } from '../models';
 
-const isArraysEqual = (a: Array<number>, b: Array<number>) => {
+export const isArraysEqual = (a: Array<number>, b: Array<number>) => {
   for (let ii = 0; ii < a.length; ii++) {
     if (a[ii] !== b[ii]) {
       return false;
@@ -17,7 +17,7 @@ const isArraysEqual = (a: Array<number>, b: Array<number>) => {
   return true;
 };
 
-const createRowFromColumn = (array: FieldType, colIndex: number): Array<number> => {
+export const createRowFromColumn = (array: FieldType, colIndex: number): Array<number> => {
   const result = [];
   for (let row = 0; row < array.length; row++) {
     result[row] = array[row][colIndex];
@@ -25,7 +25,7 @@ const createRowFromColumn = (array: FieldType, colIndex: number): Array<number> 
   return result;
 };
 
-const applyColumnResult = (array: FieldType, colIndex: number, result: Array<number>): void => {
+export const applyColumnResult = (array: FieldType, colIndex: number, result: Array<number>): void => {
   for (let row = 0; row < array.length; row++) {
     array[row][colIndex] = result[row];
   }
