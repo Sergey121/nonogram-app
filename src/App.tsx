@@ -1,33 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { Provider } from 'react-redux'
+import store from './store';
 import './App.scss';
-import { resolveNonogram, tryResolveRow } from './utils';
+import { Header } from './components/header';
 
 function App() {
-  useEffect(() => {
-    const rows = [
-      [3],
-      [1, 1],
-      [1, 1, 1],
-      [1, 1],
-      [1, 1],
-    ];
-
-    const cols = [
-      [2, 1],
-      [1, 1],
-      [1, 1],
-      [1, 1],
-      [2, 1],
-    ];
-
-    const res = resolveNonogram(rows, cols);
-    console.log(res);
-
-  }, []);
   return (
-    <div className="app">
-      App
-    </div>
+    <Provider store={store}>
+      <div className="app">
+        <Header/>
+
+      </div>
+    </Provider>
   );
 }
 
