@@ -5,13 +5,17 @@ $color: #1abc9c;
   background-color: $color;
   padding: 10px 15px;
   color: white;
-  font-weight: 500;
+  font-weight: 900;
   border-radius: 6px;
   outline: none;
   cursor: pointer;
   transition: color, 0.2s;
 
-  &:hover {
+  &:hover:not(.disabled) {
     background-color: lighten($color, 10);
   }
+}
+
+.disabled {
+  background-color: red;
 }

@@ -1,0 +1,3 @@
+export const APP_CONSTANTS = {
+  SET_RUNNING: 'APP__SET_RUNNING',
+};

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './grid.module.scss';
 import { RootState } from '../../store';
 import { FieldType } from '../../models';
 import { createField, resolveNonogram } from '../../utils';
+import { AppActions } from '../../store/app/actions';
 
 export const Grid = () => {
-  const { columns, rows } = useSelector((state: RootState) => state.app);
+  const dispatch = useDispatch();
+  const { columns, rows, running } = useSelector((state: RootState) => state.app);
   const [field, setField] = useState<FieldType>([]);
 
   useEffect(() => {
@@ -16,10 +18,20 @@ export const Grid = () => {
 
     const f = createField(rows, columns);
 
-    const resolved = resolveNonogram(rows, columns);
-
-    setField(resolved);
+    setField(f);
   }, [columns, rows]);
+
+  useEffect(() => {
+   if (running) {
+     try {
+       const resolved = resolveNonogram(rows, columns);
+       setField(resolved);
+       dispatch(AppActions.setRunning(false));
+     } catch (e) {
+       console.log('Error', e);
+     }
+   }
+  }, [columns, rows, running]);
 
   return (
     <table className={styles.table}>

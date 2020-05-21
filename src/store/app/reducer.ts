@@ -1,8 +1,59 @@
 import { Action } from '../../models/Action';
+import { APP_CONSTANTS } from './constants';
 
 export type AppState = {
   rows: Array<Array<number>>;
   columns: Array<Array<number>>;
+  running: boolean;
+};
+
+const QR = {
+  rows: [
+    [7, 2, 2, 7],
+    [1, 1, 1, 2, 1, 1],
+    [1, 3, 1, 3, 1, 1, 3, 1],
+    [1, 3, 1, 2, 1, 1, 3, 1],
+    [1, 3, 1, 2, 1, 3, 1],
+    [1, 1, 2, 2, 1, 1],
+    [7, 1, 1, 1, 7],
+    [2],
+    [2, 3, 2, 1, 4],
+    [1, 1, 3, 3, 2, 1],
+    [3, 1, 3, 2, 2],
+    [1, 1, 1, 3, 1, 1],
+    [1, 5, 1, 1, 1, 1],
+    [1, 1, 1, 1, 3, 1],
+    [7, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 3, 1, 1, 1, 2, 2],
+    [1, 3, 1, 2, 1, 2, 1, 1],
+    [1, 3, 1, 1, 1, 2],
+    [1, 1, 2, 1, 1],
+    [7, 1, 3, 1],
+  ],
+  columns: [
+    [7, 1, 2, 7],
+    [1, 1, 1, 1, 1, 1],
+    [1, 3, 1, 1, 1, 3, 1],
+    [1, 3, 1, 1, 1, 1, 3, 1],
+    [1, 3, 1, 1, 1, 1, 3, 1],
+    [1, 1, 2, 1, 1],
+    [7, 1, 1, 1, 7],
+    [4],
+    [4, 2, 2, 2, 2, 2],
+    [1, 2, 1, 1, 1, 2, 3],
+    [1, 2, 2, 2],
+    [2, 3, 1, 1, 1, 1, 1],
+    [3, 3, 2, 3, 1, 1],
+    [1, 1, 3, 2],
+    [7, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 3, 1, 3, 2, 3],
+    [1, 3, 1, 2, 2, 1, 1],
+    [1, 3, 1, 1, 1, 1, 1],
+    [1, 1, 5, 3],
+    [7, 1, 1, 2, 1],
+  ]
 };
 
 const Bunny = {
@@ -67,11 +118,18 @@ const initialState: AppState = {
   //   [1, 1],
   //   [2, 1],
   // ],
-  ...Bunny
+  ...Bunny,
+  running: false,
 };
 
 const app = (state: AppState = initialState, action: Action) => {
   switch (action.type) {
+    case APP_CONSTANTS.SET_RUNNING: {
+      return {
+        ...state,
+        running: action.payload,
+      };
+    }
     default: {
       return state;
     }
