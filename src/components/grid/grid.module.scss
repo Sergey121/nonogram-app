@@ -1,7 +1,12 @@
-$color: rgb(175, 216, 248);
+$color: rgb(12, 53, 71);
+$bg: rgb(175, 216, 248);
+
+.table {
+  border-collapse: collapse;
+}
 
 .cell {
-  border: 1px solid $color;
+  border: 1px solid $bg;
   background-color: white;
   width: 25px;
   height: 25px;

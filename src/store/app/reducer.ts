@@ -53,20 +53,21 @@ const Bunny = {
 };
 
 const initialState: AppState = {
-  rows: [
-    [3],
-    [1, 1],
-    [1, 1, 1],
-    [1, 1],
-    [1, 1],
-  ],
-  columns: [
-    [2, 1],
-    [1, 1],
-    [1, 1],
-    [1, 1],
-    [2, 1],
-  ],
+  // rows: [
+  //   [3],
+  //   [1, 1],
+  //   [1, 1, 1],
+  //   [1, 1],
+  //   [1, 1],
+  // ],
+  // columns: [
+  //   [2, 1],
+  //   [1, 1],
+  //   [1, 1],
+  //   [1, 1],
+  //   [2, 1],
+  // ],
+  ...Bunny
 };
 
 const app = (state: AppState = initialState, action: Action) => {

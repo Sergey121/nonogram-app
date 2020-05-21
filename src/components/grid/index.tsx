@@ -22,7 +22,7 @@ export const Grid = () => {
   }, [columns, rows]);
 
   return (
-    <table>
+    <table className={styles.table}>
       <tbody>
       {field.map((row, rowIndex) => {
         return (
