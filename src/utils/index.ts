@@ -42,6 +42,11 @@ export const resolveNonogram = (rows: Array<Array<number>>, cols: Array<Array<nu
     // Go through rows
     for (let rowNumber = 0; rowNumber < rows.length; rowNumber++) {
       const row = Field[rowNumber];
+
+      if (!row.includes(0)) {
+        continue;
+      }
+
       const rowDefinition = rows[rowNumber];
       const result = tryResolveRow(row, rowDefinition);
       if (!isArraysEqual(row, result)) {
@@ -53,6 +58,11 @@ export const resolveNonogram = (rows: Array<Array<number>>, cols: Array<Array<nu
     // Go through columns
     for (let colNumber = 0; colNumber < cols.length; colNumber++) {
       const row = createRowFromColumn(Field, colNumber);
+
+      if (!row.includes(0)) {
+        continue;
+      }
+
       const colDefinition = cols[colNumber];
       const result = tryResolveRow(row, colDefinition);
       if (!isArraysEqual(row, result)) {

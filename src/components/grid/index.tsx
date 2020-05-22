@@ -48,8 +48,14 @@ export const Grid = () => {
             // Go through rows
             setHorizontal(true);
             for (let rowNumber = 0; rowNumber < rows.length; rowNumber++) {
-              setScannerPosition(rowNumber);
               const row = field[rowNumber];
+
+              if (!row.includes(0)) {
+                continue;
+              }
+
+              setScannerPosition(rowNumber);
+
               const rowDefinition = rows[rowNumber];
               const result = tryResolveRow(row, rowDefinition);
               if (!isArraysEqual(row, result)) {
@@ -64,8 +70,13 @@ export const Grid = () => {
             // Go through columns
             setHorizontal(false);
             for (let colNumber = 0; colNumber < columns.length; colNumber++) {
-              setScannerPosition(colNumber);
               const row = createRowFromColumn(field, colNumber);
+
+              if (!row.includes(0)) {
+                continue;
+              }
+
+              setScannerPosition(colNumber);
               const colDefinition = columns[colNumber];
               const result = tryResolveRow(row, colDefinition);
               if (!isArraysEqual(row, result)) {
