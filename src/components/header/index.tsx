@@ -35,6 +35,9 @@ export const Header = () => {
       <Select disabled={running} className={styles.selector} options={SpeedOptions} prefix={'Speed:'} value={speed} onChange={handleChangeSpeed}/>
       <Button disabled={running} className={styles.btn} title={'Visualize!'} onClick={handleClick}/>
       <Button disabled={running} className={styles.btn} title={'Clear Field!'} onClick={handleClear}/>
+      <div className={styles.github}>
+        <a target={'_blank'} href="https://github.com/Sergey121/nonogram-app/">View on GitHub</a>
+      </div>
     </nav>
   )
 };
