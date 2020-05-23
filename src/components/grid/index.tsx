@@ -91,7 +91,7 @@ export const Grid = () => {
 
           dispatch(AppActions.setRunning(false));
         } catch (e) {
-          console.log('Error', e);
+          alert('Not correct data provided. Please, check your inputs carefully!');
         }
       }
     };

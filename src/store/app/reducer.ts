@@ -1,10 +1,12 @@
 import { Action } from '../../models/Action';
 import { APP_CONSTANTS } from './constants';
+import { Option } from '../../models/Option';
 
 export type AppState = {
   rows: Array<Array<number>>;
   columns: Array<Array<number>>;
   running: boolean;
+  selectedOption: Option;
 };
 
 const QR = {
@@ -198,8 +200,100 @@ const Aries = {
   ],
 };
 
+const Flower = {
+  rows: [
+    [3],
+    [1, 1],
+    [1, 1],
+    [1, 2],
+    [1, 1, 1, 2],
+
+    [1, 1, 2, 2],
+    [1, 6, 2, 1, 2],
+    [1, 2, 2, 1, 5],
+    [1, 2, 1, 1, 2],
+    [1, 6, 1, 3],
+
+    [2, 2, 2, 2, 2],
+    [2, 3, 8],
+    [2, 2, 2, 2],
+    [2, 1, 1, 1],
+    [2, 1, 2, 2],
+
+    [2, 2, 2, 4, 1],
+    [2, 2, 1, 3, 5],
+    [2, 3, 4, 2, 1],
+    [2, 14, 2],
+    [2, 7, 4],
+
+    [2, 3, 3],
+    [2, 3, 2],
+    [2, 3],
+    [1, 22],
+    [24],
+  ],
+  columns: [
+    [20],
+    [13, 1],
+    [2],
+    [2, 3],
+    [3, 4],
+
+    [1, 1, 5],
+    [1, 1, 3, 2],
+    [1, 2, 6, 2],
+    [1, 11, 2],
+    [1, 2, 3, 2],
+
+    [2, 2, 2, 2, 2],
+    [1, 9, 3, 2],
+    [1, 5, 2],
+    [3, 2, 2, 2],
+    [4, 3, 2, 2],
+
+    [8, 1, 1, 2],
+    [3, 1, 1, 2],
+    [2, 1, 1, 1, 2],
+    [2, 2, 2, 1, 1, 2],
+    [4, 2, 1, 1, 2],
+
+    [1, 1, 2, 2, 2],
+    [2, 1, 3, 1, 2],
+    [2, 2, 5, 2],
+    [3, 1, 4, 2],
+    [4, 2, 1],
+  ],
+};
+
+export const NonogramOptions: Option[] = [
+  {
+    label: 'QR code',
+    value: 1,
+  },
+  {
+    label: 'Bunny',
+    value: 2,
+  },
+  {
+    label: 'Aries',
+    value: 3,
+  },
+  {
+    label: 'Flower',
+    value: 4,
+  },
+];
+
+const imagesMapper: { [key: number]: { rows: Array<Array<number>>, columns: Array<Array<number>> } } = {
+  1: QR,
+  2: Bunny,
+  3: Aries,
+  4: Flower,
+};
+
 const initialState: AppState = {
-  ...Bunny,
+  ...imagesMapper[NonogramOptions[0].value],
+  selectedOption: NonogramOptions[0],
   running: false,
 };
 
@@ -210,6 +304,15 @@ const app = (state: AppState = initialState, action: Action) => {
         ...state,
         running: action.payload,
       };
+    }
+    case APP_CONSTANTS.CHANGE_OPTION: {
+      const option: Option = action.payload;
+      return {
+        ...state,
+        ...imagesMapper[option.value],
+        selectedOption: option,
+        running: false,
+      }
     }
     default: {
       return state;
