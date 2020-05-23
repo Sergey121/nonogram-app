@@ -6,9 +6,9 @@ import { FieldType } from '../../models';
 import {
   applyColumnResult,
   createField,
-  createRowFromColumn,
+  createRowFromColumn, every,
   isArraysEqual,
-  resolveNonogram,
+  sum,
   tryResolveRow
 } from '../../utils';
 import { AppActions } from '../../store/app/actions';
@@ -19,25 +19,9 @@ function timeout(ms: number) {
 
 const CELL_SIZE = 25;
 
-function every(arr: Array<number>, value: number): boolean {
-  for (let ii = 0; ii < arr.length; ii++) {
-    if (arr[ii] !== value) {
-      return false;
-    }
-  }
-  return true;
-}
-
-function sum(arr: Array<number>): number {
-  return arr.reduce((acc, v) => {
-    acc += v;
-    return acc;
-  }, 0);
-}
-
 export const Grid = () => {
   const dispatch = useDispatch();
-  const { columns, rows, running } = useSelector((state: RootState) => state.app);
+  const { columns, rows, running, speed, clear } = useSelector((state: RootState) => state.app);
   const [field, setField] = useState<FieldType>([]);
   const [isHorizontal, setHorizontal] = useState(true);
   const [scannerPosition, setScannerPosition] = useState(0);
@@ -58,11 +42,16 @@ export const Grid = () => {
 
     const maxRow = rows.slice().sort((a, b) => b.length - a.length)[0].length;
     setMaxRowsHeight(new Array(maxRow).fill(0));
-  }, [columns, rows]);
+
+    if (clear) {
+      dispatch(AppActions.clearField(!clear));
+    }
+  }, [columns, rows, clear]);
 
   useEffect(() => {
     const solve = async () => {
       if (running) {
+
         try {
           let hasChanges;
 
@@ -92,7 +81,7 @@ export const Grid = () => {
               }
               field.splice(rowNumber, 1, result);
 
-              await timeout(30);
+              await timeout(speed.value);
               setField(field.slice());
             }
 
@@ -118,7 +107,7 @@ export const Grid = () => {
                 hasChanges = true;
               }
               applyColumnResult(field, colNumber, result);
-              await timeout(30);
+              await timeout(speed.value);
               setField(field.slice());
             }
           } while (hasChanges);

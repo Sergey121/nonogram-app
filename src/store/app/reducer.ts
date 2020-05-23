@@ -1,12 +1,15 @@
 import { Action } from '../../models/Action';
 import { APP_CONSTANTS } from './constants';
 import { Option } from '../../models/Option';
+import { Speed } from '../../models';
 
 export type AppState = {
   rows: Array<Array<number>>;
   columns: Array<Array<number>>;
   running: boolean;
   selectedOption: Option;
+  speed: Option;
+  clear: boolean;
 };
 
 const QR = {
@@ -321,10 +324,27 @@ const imagesMapper: { [key: number]: { rows: Array<Array<number>>, columns: Arra
   7: Something,
 };
 
+export const SpeedOptions: Option[] = [
+  {
+    label: 'Slow',
+    value: Speed.slow,
+  },
+  {
+    label: 'Medium',
+    value: Speed.medium,
+  },
+  {
+    label: 'Fast',
+    value: Speed.fast,
+  },
+];
+
 const initialState: AppState = {
   ...imagesMapper[NonogramOptions[0].value],
   selectedOption: NonogramOptions[0],
   running: false,
+  speed: SpeedOptions[2],
+  clear: false,
 };
 
 const app = (state: AppState = initialState, action: Action) => {
@@ -343,6 +363,19 @@ const app = (state: AppState = initialState, action: Action) => {
         selectedOption: option,
         running: false,
       }
+    }
+    case APP_CONSTANTS.CHANGE_SPEED: {
+      const option: Option = action.payload;
+      return {
+        ...state,
+        speed: option,
+      };
+    }
+    case APP_CONSTANTS.CLEAR_FIELD: {
+      return {
+        ...state,
+        clear: action.payload,
+      };
     }
     default: {
       return state;

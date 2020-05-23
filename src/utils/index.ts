@@ -17,6 +17,22 @@ export const isArraysEqual = (a: Array<number>, b: Array<number>) => {
   return true;
 };
 
+export function every(arr: Array<number>, value: number): boolean {
+  for (let ii = 0; ii < arr.length; ii++) {
+    if (arr[ii] !== value) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function sum(arr: Array<number>): number {
+  return arr.reduce((acc, v) => {
+    acc += v;
+    return acc;
+  }, 0);
+}
+
 export const createRowFromColumn = (array: FieldType, colIndex: number): Array<number> => {
   const result = [];
   for (let row = 0; row < array.length; row++) {
@@ -31,48 +47,64 @@ export const applyColumnResult = (array: FieldType, colIndex: number, result: Ar
   }
 };
 
-export const resolveNonogram = (rows: Array<Array<number>>, cols: Array<Array<number>>): FieldType => {
-  const Field = createField(rows, cols);
+export const resolveNonogram = (rows: Array<Array<number>>, cols: Array<Array<number>>): Promise<FieldType> => {
+  return new Promise<FieldType>((resolve, reject) => {
+    try {
+      const Field = createField(rows, cols);
 
-  let hasChanges;
+      let hasChanges;
 
-  do {
-    hasChanges = false;
+      do {
+        hasChanges = false;
 
-    // Go through rows
-    for (let rowNumber = 0; rowNumber < rows.length; rowNumber++) {
-      const row = Field[rowNumber];
+        // Go through rows
+        for (let rowNumber = 0; rowNumber < rows.length; rowNumber++) {
+          const row = Field[rowNumber];
 
-      if (!row.includes(0)) {
-        continue;
-      }
+          if (!row.includes(0)) {
+            continue;
+          }
 
-      const rowDefinition = rows[rowNumber];
-      const result = tryResolveRow(row, rowDefinition);
-      if (!isArraysEqual(row, result)) {
-        hasChanges = true;
-      }
-      Field.splice(rowNumber, 1, result);
+          const rowDefinition = rows[rowNumber];
+
+          if (every(row, 0) && sum(rowDefinition) < row.length / 2) {
+            continue;
+          }
+
+          const result = tryResolveRow(row, rowDefinition);
+          if (!isArraysEqual(row, result)) {
+            hasChanges = true;
+          }
+          Field.splice(rowNumber, 1, result);
+        }
+
+        // Go through columns
+        for (let colNumber = 0; colNumber < cols.length; colNumber++) {
+          const row = createRowFromColumn(Field, colNumber);
+
+          if (!row.includes(0)) {
+            continue;
+          }
+
+          const colDefinition = cols[colNumber];
+
+          if (every(row, 0) && sum(colDefinition) < row.length / 2) {
+            continue;
+          }
+
+          const result = tryResolveRow(row, colDefinition);
+          if (!isArraysEqual(row, result)) {
+            hasChanges = true;
+          }
+          applyColumnResult(Field, colNumber, result);
+        }
+      } while (hasChanges);
+
+      resolve(Field);
+    } catch (e) {
+      reject(e);
     }
-
-    // Go through columns
-    for (let colNumber = 0; colNumber < cols.length; colNumber++) {
-      const row = createRowFromColumn(Field, colNumber);
-
-      if (!row.includes(0)) {
-        continue;
-      }
-
-      const colDefinition = cols[colNumber];
-      const result = tryResolveRow(row, colDefinition);
-      if (!isArraysEqual(row, result)) {
-        hasChanges = true;
-      }
-      applyColumnResult(Field, colNumber, result);
-    }
-  } while (hasChanges);
-
-  return Field;
+  })
 };
 
 export const createField = (rows: Array<Array<number>>, cols: Array<Array<number>>): FieldType => {

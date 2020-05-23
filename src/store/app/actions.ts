@@ -15,4 +15,16 @@ export const AppActions = {
       payload: option,
     };
   },
+  changeSpeed: (option: Option): Action<Option> => {
+    return {
+      type: APP_CONSTANTS.CHANGE_SPEED,
+      payload: option,
+    };
+  },
+  clearField: (clear: boolean) => {
+    return {
+      type: APP_CONSTANTS.CLEAR_FIELD,
+      payload: clear,
+    };
+  }
 };

@@ -11,10 +11,11 @@ type Props = {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  prefix?: string;
 };
 
 export const Select = (props: Props) => {
-  const { options, value, onChange, disabled, className = '', placeholder = 'Select...' } = props;
+  const { options, value, onChange, disabled, prefix = '', className = '', placeholder = 'Select...' } = props;
   const [opened, setOpened] = useState<boolean>(false);
 
   const handleChange = useCallback((option: Option) => () => {
@@ -28,7 +29,7 @@ export const Select = (props: Props) => {
   return (
     <div className={[styles.wrapper, className, disabled ? styles.disabled : ''].join(' ')}>
       <div className={styles.select} onClick={toggleOpen}>
-        <div className={styles.label}>{value ? value.label : placeholder}</div>
+        <div className={styles.label}>{value ? prefix ? `${prefix} ${value.label}` : value.label : placeholder}</div>
         <div className={styles.arrow}>
           <Expand/>
         </div>
