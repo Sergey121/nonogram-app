@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './grid.module.scss';
 import { RootState } from '../../store';
@@ -23,8 +23,10 @@ export const Grid = () => {
   const dispatch = useDispatch();
   const { columns, rows, running } = useSelector((state: RootState) => state.app);
   const [field, setField] = useState<FieldType>([]);
-  const [ isHorizontal, setHorizontal ] = useState(true);
-  const [ scannerPosition, setScannerPosition ] = useState(0);
+  const [isHorizontal, setHorizontal] = useState(true);
+  const [scannerPosition, setScannerPosition] = useState(0);
+  const [maxColumnHeight, setMaxColumnHeight] = useState<Array<number>>([]);
+  const [maxRowsHeight, setMaxRowsHeight] = useState<Array<number>>([]);
 
   useEffect(() => {
     if (!columns || !rows) {
@@ -34,6 +36,12 @@ export const Grid = () => {
     const f = createField(rows, columns);
 
     setField(f);
+
+    const maxCol = columns.slice().sort((a, b) => b.length - a.length)[0].length;
+    setMaxColumnHeight(new Array(maxCol).fill(0));
+
+    const maxRow = rows.slice().sort((a, b) => b.length - a.length)[0].length;
+    setMaxRowsHeight(new Array(maxRow).fill(0));
   }, [columns, rows]);
 
   useEffect(() => {
@@ -111,36 +119,115 @@ export const Grid = () => {
     }),
   };
 
+  const TableHeader = useCallback(() => {
+    if (!columns.length || !maxColumnHeight.length) {
+      return null;
+    }
+
+    const reversed = columns.slice().map(col => {
+      const newArr = col.slice().reverse().concat(new Array(Math.abs(maxColumnHeight.length - col.length)).fill(undefined));
+      return newArr.reverse();
+    });
+
+    return (
+      <table className={styles.numberTable}>
+        <tbody>
+        {maxColumnHeight.map((headerRow, headerIndex) => {
+          return (
+            <tr key={headerIndex}>
+              {reversed.map((column, colIndex) => {
+                return (
+                  <td key={colIndex} className={styles.numberCell}>
+                    {column[headerIndex] !== undefined ? column[headerIndex] : ''}
+                  </td>
+                )
+              })}
+            </tr>
+          );
+        })}
+        </tbody>
+      </table>
+    )
+  }, [maxColumnHeight, columns]);
+
+  const RowHeader = useCallback(() => {
+    if (!rows.length || !maxRowsHeight.length) {
+      return null;
+    }
+
+    const reversed = rows.slice().map(row => {
+      const newArr = row.slice().reverse().concat(new Array(Math.abs(maxRowsHeight.length - row.length)).fill(undefined));
+      return newArr.reverse();
+    });
+
+    return (
+      <table className={styles.numberTable}>
+        <tbody>
+        {reversed.map((row, rowIndex) => {
+          return (
+            <tr key={rowIndex}>
+              {maxRowsHeight.map((rowHeight, rowHeightIndex) => {
+                return (
+                  <td key={rowHeightIndex} className={styles.numberCell}>
+                    {row[rowHeightIndex] !== undefined ? row[rowHeightIndex] : ''}
+                  </td>
+                )
+              })}
+            </tr>
+          )
+        })}
+        </tbody>
+      </table>
+    )
+  }, [maxRowsHeight, rows]);
+
   return (
-    <table className={styles.table}>
+    <table>
       <tbody>
-      {field.map((row, rowIndex) => {
-        return (
-          <tr key={rowIndex} className={styles.row}>
-            {row.map((col, colIndex) => {
-              const classes = [styles.cell];
-
-              if (col === -1) {
-                classes.push(styles.empty);
-              }
-
-              if (col === 1) {
-                classes.push(styles.filled);
-              }
+      <tr>
+        <td></td>
+        <td>
+          <TableHeader/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <RowHeader/>
+        </td>
+        <td>
+          <table className={styles.table}>
+            <tbody>
+            {field.map((row, rowIndex) => {
               return (
-                <td key={colIndex} className={classes.join(' ')}>
-                  {col === -1 && <div className={styles.dotWrapper}>
-                    <div className={styles.dot}/>
-                  </div>}
-                </td>
+                <tr key={rowIndex} className={styles.row}>
+                  {row.map((col, colIndex) => {
+                    const classes = [styles.cell];
+
+                    if (col === -1) {
+                      classes.push(styles.empty);
+                    }
+
+                    if (col === 1) {
+                      classes.push(styles.filled);
+                    }
+                    return (
+                      <td key={colIndex} className={classes.join(' ')}>
+                        {col === -1 && <div className={styles.dotWrapper}>
+                          <div className={styles.dot}/>
+                        </div>}
+                      </td>
+                    );
+                  })}
+                </tr>
               );
             })}
-          </tr>
-        );
-      })}
-      {running &&
-      <tr className={styles.scanner} style={scannerStyle}/>
-      }
+            {running &&
+            <tr className={styles.scanner} style={scannerStyle}/>
+            }
+            </tbody>
+          </table>
+        </td>
+      </tr>
       </tbody>
     </table>
   );

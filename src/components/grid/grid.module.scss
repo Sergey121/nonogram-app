@@ -1,6 +1,7 @@
 $color: rgb(12, 53, 71);
 $bg: rgb(175, 216, 248);
 $scannerColor: rgba(178, 67, 255, 0.75);
+$cellSize: 25px;
 
 .table {
   border-collapse: collapse;
@@ -10,9 +11,21 @@ $scannerColor: rgba(178, 67, 255, 0.75);
 .cell {
   border: 1px solid $bg;
   background-color: white;
-  width: 25px;
-  height: 25px;box-sizing: border-box;
+  width: $cellSize;
+  height: $cellSize;
+  box-sizing: border-box;
+}
 
+.numberTable {
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.numberCell {
+  width: $cellSize;
+  height: $cellSize;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .dotWrapper {
