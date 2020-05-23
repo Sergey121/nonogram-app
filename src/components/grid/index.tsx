@@ -19,6 +19,22 @@ function timeout(ms: number) {
 
 const CELL_SIZE = 25;
 
+function every(arr: Array<number>, value: number): boolean {
+  for (let ii = 0; ii < arr.length; ii++) {
+    if (arr[ii] !== value) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function sum(arr: Array<number>): number {
+  return arr.reduce((acc, v) => {
+    acc += v;
+    return acc;
+  }, 0);
+}
+
 export const Grid = () => {
   const dispatch = useDispatch();
   const { columns, rows, running } = useSelector((state: RootState) => state.app);
@@ -65,6 +81,11 @@ export const Grid = () => {
               setScannerPosition(rowNumber);
 
               const rowDefinition = rows[rowNumber];
+
+              if (every(row, 0) && sum(rowDefinition) < row.length / 2) {
+                continue;
+              }
+
               const result = tryResolveRow(row, rowDefinition);
               if (!isArraysEqual(row, result)) {
                 hasChanges = true;
@@ -85,7 +106,13 @@ export const Grid = () => {
               }
 
               setScannerPosition(colNumber);
+
               const colDefinition = columns[colNumber];
+
+              if (every(row, 0) && sum(colDefinition) < row.length / 2) {
+                continue;
+              }
+
               const result = tryResolveRow(row, colDefinition);
               if (!isArraysEqual(row, result)) {
                 hasChanges = true;
