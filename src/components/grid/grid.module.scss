@@ -13,6 +13,8 @@ $cellSize: 25px;
   background-color: white;
   width: $cellSize;
   height: $cellSize;
+  min-width: $cellSize;
+  max-width: $cellSize;
   box-sizing: border-box;
 }
 

@@ -11,6 +11,7 @@ $color: #1abc9c;
   cursor: pointer;
   transition: color, 0.2s;
   font-size: 15px;
+  white-space: nowrap;
 
   &:hover:not(.disabled) {
     background-color: lighten($color, 10);
