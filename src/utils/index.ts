@@ -247,6 +247,13 @@ const fillStateMatrix = (row: Array<number>, transitions: Array<Transition>, sta
   }
 };
 
+type Queue = {
+  value: number[];
+  currentVariant: number[];
+  rowNumber: number;
+  colNumber: number;
+};
+
 const resolveRow = (stateMatrix: StateMatrixType, transitions: Array<Transition>, row: Array<number>): Array<number> => {
   // Check if exist
   const rightBottomCorner = stateMatrix[transitions.length - 1][row.length - 1];
@@ -261,14 +268,82 @@ const resolveRow = (stateMatrix: StateMatrixType, transitions: Array<Transition>
   let rowPosition = transitions.length - 1;
   let colPosition = row.length - 1;
 
-  function calculateVariant(rowNumber: number, colNumber: number, matrix: StateMachineMatrix, currentVariant: Array<number> = [], cell: Array<number> = [], useCell = false) {
+  // function calculateVariant(rowNumber: number, colNumber: number, matrix: StateMachineMatrix, currentVariant: Array<number> = [], cell: Array<number> = [], useCell = false) {
+  //   while (rowNumber !== -1 && colNumber !== -1) {
+  //     const cellArray = useCell ? cell : matrix[rowNumber][colNumber];
+  //     useCell = false;
+  //     if (cellArray.length === 2) {
+  //       calculateVariant(rowNumber, colNumber, matrix, currentVariant.slice(), [cellArray[0]], true);
+  //       calculateVariant(rowNumber, colNumber, matrix, currentVariant.slice(), [cellArray[1]], true);
+  //       return;
+  //     } else {
+  //       const value = cellArray[0];
+  //
+  //       switch (value) {
+  //         case StateMatrixTransitions.LEFT_O: {
+  //           currentVariant.push(FieldPossibleValues.WHITE_SQUARE);
+  //           colNumber = colNumber - 1;
+  //           break;
+  //         }
+  //         case StateMatrixTransitions.LEFT_X: {
+  //           currentVariant.push(FieldPossibleValues.BLACK_SQUARE);
+  //           colNumber = colNumber - 1;
+  //           break;
+  //         }
+  //         case StateMatrixTransitions.LEFT_TOP_O: {
+  //           currentVariant.push(FieldPossibleValues.WHITE_SQUARE);
+  //           rowNumber = rowNumber - 1;
+  //           colNumber = colNumber - 1;
+  //           break;
+  //         }
+  //         case StateMatrixTransitions.LEFT_TOP_X: {
+  //           currentVariant.push(FieldPossibleValues.BLACK_SQUARE);
+  //           rowNumber = rowNumber - 1;
+  //           colNumber = colNumber - 1;
+  //           break;
+  //         }
+  //         default: {
+  //           colNumber = colNumber - 1;
+  //           rowNumber = rowNumber - 1;
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   availableVariants.push(currentVariant.reverse());
+  // }
+  //
+  // calculateVariant(rowPosition, colPosition, stateMatrix);
+
+  const q: Queue[] = [{
+    value: stateMatrix[rowPosition][colPosition],
+    currentVariant: [],
+    rowNumber: rowPosition,
+    colNumber: colPosition,
+  }];
+
+  while (q.length) {
+    let { value, currentVariant, colNumber, rowNumber } = q.pop() as Queue;
+    let exit = false;
+
     while (rowNumber !== -1 && colNumber !== -1) {
-      const cellArray = useCell ? cell : matrix[rowNumber][colNumber];
-      useCell = false;
+      let cellArray = value.length ? value : stateMatrix[rowNumber][colNumber];
+      value = [];
       if (cellArray.length === 2) {
-        calculateVariant(rowNumber, colNumber, matrix, currentVariant.slice(), [cellArray[0]], true);
-        calculateVariant(rowNumber, colNumber, matrix, currentVariant.slice(), [cellArray[1]], true);
-        return;
+        q.push({
+          value: [cellArray[0]],
+          currentVariant: currentVariant.slice(),
+          rowNumber,
+          colNumber,
+        });
+        q.push({
+          value: [cellArray[1]],
+          currentVariant: currentVariant.slice(),
+          rowNumber,
+          colNumber,
+        });
+        exit = true;
+        break;
       } else {
         const value = cellArray[0];
 
@@ -303,10 +378,10 @@ const resolveRow = (stateMatrix: StateMatrixType, transitions: Array<Transition>
       }
     }
 
-    availableVariants.push(currentVariant.reverse());
+    if (!exit) {
+      availableVariants.push(currentVariant.reverse());
+    }
   }
-
-  calculateVariant(rowPosition, colPosition, stateMatrix);
 
   const response: Array<number> = [];
 
