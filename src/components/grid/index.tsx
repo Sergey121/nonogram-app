@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './grid.module.scss';
 import { RootState } from '../../store';
@@ -12,6 +12,7 @@ import {
   tryResolveRow
 } from '../../utils';
 import { AppActions } from '../../store/app/actions';
+import { Button } from '../button';
 
 function timeout(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -19,14 +20,30 @@ function timeout(ms: number) {
 
 const CELL_SIZE = 25;
 
+function parseArray(text: string) {
+  return text
+    .replace(/[^\d\n]+/g, ' ')
+    .trim()
+    .split('\n')
+    .map(row => (row.match(/\d+/g) || [])
+      .map(parseFloat)
+      .filter(Math.sign));
+}
+
+function parseText(text: string) {
+  return text.replace(/(\]|\})[^\d\]\}]+/g, '\n').replace(/[^\d\n]+/g, '  ').replace(/[ \t]*\n[ \t]*/g, '\n').trim();
+}
+
 export const Grid = () => {
   const dispatch = useDispatch();
-  const { columns, rows, running, speed, clear } = useSelector((state: RootState) => state.app);
+  const { columns, rows, running, speed, clear, selectedOption } = useSelector((state: RootState) => state.app);
   const [field, setField] = useState<FieldType>([]);
   const [isHorizontal, setHorizontal] = useState(true);
   const [scannerPosition, setScannerPosition] = useState(0);
   const [maxColumnHeight, setMaxColumnHeight] = useState<Array<number>>([]);
   const [maxRowsHeight, setMaxRowsHeight] = useState<Array<number>>([]);
+  const [rowsInput, setRowsInput] = useState('');
+  const [columnsInput, setColumnsInput] = useState('');
 
   useEffect(() => {
     if (!columns || !rows) {
@@ -49,6 +66,10 @@ export const Grid = () => {
   }, [columns, rows, clear]);
 
   useEffect(() => {
+    if (!rows || !columns) {
+      return;
+    }
+
     const solve = async () => {
       if (running) {
 
@@ -116,6 +137,7 @@ export const Grid = () => {
           dispatch(AppActions.setRunning(false));
         } catch (e) {
           alert('Not correct data provided. Please, check your inputs carefully!');
+          dispatch(AppActions.setRunning(false));
         }
       }
     };
@@ -123,7 +145,7 @@ export const Grid = () => {
     solve();
   }, [columns, rows, running]);
 
-  const scannerStyle = {
+  const scannerStyle = columns && rows ? ({
     ...(isHorizontal ? {
       height: CELL_SIZE,
       width: columns.length * CELL_SIZE,
@@ -133,9 +155,13 @@ export const Grid = () => {
       height: rows.length * CELL_SIZE,
       left: scannerPosition * CELL_SIZE,
     }),
-  };
+  }) : {};
 
   const TableHeader = useCallback(() => {
+    if (!columns) {
+      return null;
+    }
+
     if (!columns.length || !maxColumnHeight.length) {
       return null;
     }
@@ -167,6 +193,10 @@ export const Grid = () => {
   }, [maxColumnHeight, columns]);
 
   const RowHeader = useCallback(() => {
+    if (!rows) {
+      return null;
+    }
+
     if (!rows.length || !maxRowsHeight.length) {
       return null;
     }
@@ -197,54 +227,93 @@ export const Grid = () => {
     )
   }, [maxRowsHeight, rows]);
 
+  const updateInput = useCallback((setter) => {
+    return (e: ChangeEvent<HTMLTextAreaElement>) => {
+      setter(e.target.value);
+    }
+  }, []);
+
+  const handleParse = useCallback(() => {
+    const r = parseText(rowsInput);
+    const c = parseText(columnsInput);
+
+    const rows = parseArray(r);
+    const columns = parseArray(c);
+
+    setRowsInput(parseText(rowsInput));
+    setColumnsInput(parseText(columnsInput));
+
+    if (r.length && c.length) {
+      dispatch(AppActions.setCustomFields(rows, columns));
+    }
+  }, [rowsInput, columnsInput]);
+
   return (
-    <table>
-      <tbody>
-      <tr>
-        <td></td>
-        <td>
-          <TableHeader/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <RowHeader/>
-        </td>
-        <td>
-          <table className={styles.table}>
-            <tbody>
-            {field.map((row, rowIndex) => {
-              return (
-                <tr key={rowIndex} className={styles.row}>
-                  {row.map((col, colIndex) => {
-                    const classes = [styles.cell];
+    <>
+      {selectedOption.value === -1 && (
+        <>
+          <div className={styles.description}>Put your rows in the left and columns in the right textarea. One row (column) a line, numbers separated by any non-numerical characters.</div>
+          <div className={styles.inputs}>
+          <textarea value={rowsInput} onChange={updateInput(setRowsInput)} placeholder={'Rows...'}
+                    className={styles.input}/>
+            <textarea value={columnsInput} onChange={updateInput(setColumnsInput)} placeholder={'Columns...'}
+                      className={styles.input}/>
+            <div className={styles.actions}>
+              <Button title={'Parse'} onClick={handleParse}/>
+            </div>
+          </div>
+        </>
+      )}
+      {rows && columns &&
+      <table>
+        <tbody>
+        <tr>
+          <td></td>
+          <td>
+            <TableHeader/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <RowHeader/>
+          </td>
+          <td>
+            <table className={styles.table}>
+              <tbody>
+              {field.map((row, rowIndex) => {
+                return (
+                  <tr key={rowIndex} className={styles.row}>
+                    {row.map((col, colIndex) => {
+                      const classes = [styles.cell];
 
-                    if (col === -1) {
-                      classes.push(styles.empty);
-                    }
+                      if (col === -1) {
+                        classes.push(styles.empty);
+                      }
 
-                    if (col === 1) {
-                      classes.push(styles.filled);
-                    }
-                    return (
-                      <td key={colIndex} className={classes.join(' ')}>
-                        {col === -1 && <div className={styles.dotWrapper}>
-                          <div className={styles.dot}/>
-                        </div>}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-            {running &&
-            <tr className={styles.scanner} style={scannerStyle}/>
-            }
-            </tbody>
-          </table>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+                      if (col === 1) {
+                        classes.push(styles.filled);
+                      }
+                      return (
+                        <td key={colIndex} className={classes.join(' ')}>
+                          {col === -1 && <div className={styles.dotWrapper}>
+                            <div className={styles.dot}/>
+                          </div>}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+              {running &&
+              <tr className={styles.scanner} style={scannerStyle}/>
+              }
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      }
+    </>
   );
 };

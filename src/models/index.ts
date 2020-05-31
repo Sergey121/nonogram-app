@@ -38,7 +38,7 @@ export type FieldType<T = number> = Array<Array<T>>;
 export type StateMatrixType = Array<Array<Array<number>>>;
 
 export enum Speed {
-  slow = 100,
-  medium = 60,
-  fast = 30,
+  slow = 60,
+  medium = 30,
+  fast = 0,
 }

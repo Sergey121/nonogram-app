@@ -4,8 +4,8 @@ import { Option } from '../../models/Option';
 import { Speed } from '../../models';
 
 export type AppState = {
-  rows: Array<Array<number>>;
-  columns: Array<Array<number>>;
+  rows: Array<Array<number>> | null;
+  columns: Array<Array<number>> | null;
   running: boolean;
   selectedOption: Option;
   speed: Option;
@@ -304,6 +304,10 @@ export const NonogramOptions: Option[] = [
     value: 1,
   },
   {
+    label: 'Custom Field',
+    value: -1,
+  },
+  {
     label: 'Bunny',
     value: 2,
   },
@@ -341,17 +345,30 @@ export const NonogramOptions: Option[] = [
   }
 ];
 
-const imagesMapper: { [key: number]: { rows: Array<Array<number>>, columns: Array<Array<number>> } } = {
-  1: QR,
-  2: Bunny,
-  3: Aries,
-  4: Flower,
-  5: Dog,
-  6: Queen,
-  7: Something,
-  8: Bacterium,
-  9: GaryGrant,
-  10: Cats,
+const imagesMapper = (value: number): { rows: Array<Array<number>> | null, columns: Array<Array<number>> | null } => {
+  const image: any = {
+    1: QR,
+    2: Bunny,
+    3: Aries,
+    4: Flower,
+    5: Dog,
+    6: Queen,
+    7: Something,
+    8: Bacterium,
+    9: GaryGrant,
+    10: Cats,
+  };
+
+  const response = image[value];
+
+  if (response) {
+    return response;
+  }
+
+  return {
+    rows: null,
+    columns: null,
+  };
 };
 
 export const SpeedOptions: Option[] = [
@@ -370,7 +387,7 @@ export const SpeedOptions: Option[] = [
 ];
 
 const initialState: AppState = {
-  ...imagesMapper[NonogramOptions[0].value],
+  ...imagesMapper(NonogramOptions[0].value),
   selectedOption: NonogramOptions[0],
   running: false,
   speed: SpeedOptions[2],
@@ -389,7 +406,7 @@ const app = (state: AppState = initialState, action: Action) => {
       const option: Option = action.payload;
       return {
         ...state,
-        ...imagesMapper[option.value],
+        ...imagesMapper(option.value),
         selectedOption: option,
         running: false,
       }
@@ -405,6 +422,13 @@ const app = (state: AppState = initialState, action: Action) => {
       return {
         ...state,
         clear: action.payload,
+      };
+    }
+    case APP_CONSTANTS.SET_CUSTOM_FIELD: {
+      return {
+        ...state,
+        rows: action.payload.rows,
+        columns: action.payload.columns,
       };
     }
     default: {

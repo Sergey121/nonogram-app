@@ -26,5 +26,14 @@ export const AppActions = {
       type: APP_CONSTANTS.CLEAR_FIELD,
       payload: clear,
     };
+  },
+  setCustomFields: (rows: Array<Array<number>>, columns: Array<Array<number>>) => {
+    return {
+      type: APP_CONSTANTS.SET_CUSTOM_FIELD,
+      payload: {
+        rows,
+        columns,
+      },
+    };
   }
 };
