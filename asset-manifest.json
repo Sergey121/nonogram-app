@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/nonogram-app/static/css/main.adffba3a.chunk.css",
-    "main.js": "/nonogram-app/static/js/main.88b6d7ca.chunk.js",
-    "main.js.map": "/nonogram-app/static/js/main.88b6d7ca.chunk.js.map",
+    "main.css": "/nonogram-app/static/css/main.a3f5bf6d.chunk.css",
+    "main.js": "/nonogram-app/static/js/main.b1e6920c.chunk.js",
+    "main.js.map": "/nonogram-app/static/js/main.b1e6920c.chunk.js.map",
     "runtime-main.js": "/nonogram-app/static/js/runtime-main.7de2b802.js",
     "runtime-main.js.map": "/nonogram-app/static/js/runtime-main.7de2b802.js.map",
-    "static/js/2.48b7a40a.chunk.js": "/nonogram-app/static/js/2.48b7a40a.chunk.js",
-    "static/js/2.48b7a40a.chunk.js.map": "/nonogram-app/static/js/2.48b7a40a.chunk.js.map",
+    "static/js/2.6861006c.chunk.js": "/nonogram-app/static/js/2.6861006c.chunk.js",
+    "static/js/2.6861006c.chunk.js.map": "/nonogram-app/static/js/2.6861006c.chunk.js.map",
     "index.html": "/nonogram-app/index.html",
-    "precache-manifest.dd80fc7239004b0ef6064649fe02c00e.js": "/nonogram-app/precache-manifest.dd80fc7239004b0ef6064649fe02c00e.js",
+    "precache-manifest.e5e97a6ca26f20c130e3ba5e60dedc6a.js": "/nonogram-app/precache-manifest.e5e97a6ca26f20c130e3ba5e60dedc6a.js",
     "service-worker.js": "/nonogram-app/service-worker.js",
-    "static/css/main.adffba3a.chunk.css.map": "/nonogram-app/static/css/main.adffba3a.chunk.css.map",
-    "static/js/2.48b7a40a.chunk.js.LICENSE.txt": "/nonogram-app/static/js/2.48b7a40a.chunk.js.LICENSE.txt",
+    "static/css/main.a3f5bf6d.chunk.css.map": "/nonogram-app/static/css/main.a3f5bf6d.chunk.css.map",
+    "static/js/2.6861006c.chunk.js.LICENSE.txt": "/nonogram-app/static/js/2.6861006c.chunk.js.LICENSE.txt",
     "static/media/expand_more.cb42b4c5.svg": "/nonogram-app/static/media/expand_more.cb42b4c5.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.7de2b802.js",
-    "static/js/2.48b7a40a.chunk.js",
-    "static/css/main.adffba3a.chunk.css",
-    "static/js/main.88b6d7ca.chunk.js"
+    "static/js/2.6861006c.chunk.js",
+    "static/css/main.a3f5bf6d.chunk.css",
+    "static/js/main.b1e6920c.chunk.js"
   ]
 }
