@@ -111,6 +111,34 @@ $cellSize: 25px;
   padding: 10px 30px;
 }
 
+.colDivider {
+  position: absolute;
+  top: 0;
+  bottom: -20px;
+  border-left: 4px solid darken($bg, 20%);
+  transform: translateX(-2px);
+  display: flex;
+  align-items: flex-end;
+}
+
+.rowDivider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: -20px;
+  border-bottom: 4px solid darken($bg, 20%);
+  transform: translateY(-2px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.dividerNumber {
+  margin-left: 2px;
+  font-size: 12px;
+  position: absolute;
+}
+
 @keyframes fillAnimation {
   0% {
     transform: scale(0.3);

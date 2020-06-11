@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import styles from './select.module.scss';
 import { Option } from '../../models/Option';
 import { ReactComponent as Expand } from './expand_more.svg';
+import { useOnClickOutside } from '../../hooks/useClickOutside';
 
 
 type Props = {
@@ -15,8 +16,11 @@ type Props = {
 };
 
 export const Select = (props: Props) => {
+  const ref = useRef<HTMLUListElement>(null);
   const { options, value, onChange, disabled, prefix = '', className = '', placeholder = 'Select...' } = props;
   const [opened, setOpened] = useState<boolean>(false);
+
+  useOnClickOutside(ref, () => setOpened(false));
 
   const handleChange = useCallback((option: Option) => () => {
     onChange(option);
@@ -35,7 +39,7 @@ export const Select = (props: Props) => {
         </div>
       </div>
       {opened &&
-      <ul className={styles.list}>
+      <ul className={styles.list} ref={ref}>
         {options.map((o) => {
           return (
             <li className={styles.item} onClick={handleChange(o)} key={o.value}>{o.label}</li>

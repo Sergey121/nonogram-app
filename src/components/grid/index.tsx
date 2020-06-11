@@ -307,6 +307,18 @@ export const Grid = () => {
               {running &&
               <tr className={styles.scanner} style={scannerStyle}/>
               }
+              {columns.filter((_, index) => (index + 1) % 5 === 0).map((r, i) => {
+                const index = i + 1;
+                return <tr key={index} className={styles.colDivider} style={{transform: `translateX(${CELL_SIZE * index * 5}px)`}}>
+                  <span className={styles.dividerNumber}>{index * 5}</span>
+                </tr>
+              })}
+              {rows.filter((_, index) => (index + 1) % 5 === 0).map((r, i) => {
+                const index = i + 1;
+                return <tr key={index} className={styles.rowDivider} style={{transform: `translateY(${CELL_SIZE * index * 5}px)`}}>
+                  <span className={styles.dividerNumber}>{index * 5}</span>
+                </tr>
+              })}
               </tbody>
             </table>
           </td>
