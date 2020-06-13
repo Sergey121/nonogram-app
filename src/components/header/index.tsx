@@ -14,7 +14,7 @@ export const Header = () => {
 
   const handleClick = useCallback(() => {
     dispatch(AppActions.setRunning(!running));
-  }, [running]);
+  }, [dispatch, running]);
 
   const handleChangeOption = useCallback((option: Option) => {
     dispatch(AppActions.changeOption(option));
@@ -26,7 +26,7 @@ export const Header = () => {
 
   const handleClear = useCallback(() => {
     dispatch(AppActions.clearField(!clear));
-  }, [clear]);
+  }, [dispatch, clear]);
 
   return (
     <nav className={styles.navigation}>
@@ -36,7 +36,7 @@ export const Header = () => {
       <Button disabled={running} className={styles.btn} title={'Visualize!'} onClick={handleClick}/>
       <Button disabled={running} className={styles.btn} title={'Clear Field!'} onClick={handleClear}/>
       <div className={styles.github}>
-        <a target={'_blank'} href="https://github.com/Sergey121/nonogram-app/">View on GitHub</a>
+        <a target={'_blank'} rel="noopener noreferrer" href="https://github.com/Sergey121/nonogram-app/">View on GitHub</a>
       </div>
     </nav>
   )

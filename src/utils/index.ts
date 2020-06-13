@@ -1,6 +1,6 @@
 import {
   FieldPossibleValues,
-  FieldType, StateMachineMatrix,
+  FieldType,
   StateMachineTransitions,
   StateMatrixTransitions,
   StateMatrixType,

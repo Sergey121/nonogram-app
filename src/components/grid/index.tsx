@@ -143,7 +143,7 @@ export const Grid = () => {
     };
 
     solve();
-  }, [columns, rows, running]);
+  }, [dispatch, columns, rows, running]);
 
   const scannerStyle = columns && rows ? ({
     ...(isHorizontal ? {
@@ -246,7 +246,7 @@ export const Grid = () => {
     if (r.length && c.length) {
       dispatch(AppActions.setCustomFields(rows, columns));
     }
-  }, [rowsInput, columnsInput]);
+  }, [dispatch, rowsInput, columnsInput]);
 
   return (
     <>
@@ -310,13 +310,13 @@ export const Grid = () => {
               {columns.filter((_, index) => (index + 1) % 5 === 0).map((r, i) => {
                 const index = i + 1;
                 return <tr key={index} className={styles.colDivider} style={{transform: `translateX(${CELL_SIZE * index * 5}px)`}}>
-                  <span className={styles.dividerNumber}>{index * 5}</span>
+                  <td className={styles.dividerNumber}>{index * 5}</td>
                 </tr>
               })}
               {rows.filter((_, index) => (index + 1) % 5 === 0).map((r, i) => {
                 const index = i + 1;
                 return <tr key={index} className={styles.rowDivider} style={{transform: `translateY(${CELL_SIZE * index * 5}px)`}}>
-                  <span className={styles.dividerNumber}>{index * 5}</span>
+                  <td className={styles.dividerNumber}>{index * 5}</td>
                 </tr>
               })}
               </tbody>

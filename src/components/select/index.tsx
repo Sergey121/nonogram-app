@@ -22,13 +22,14 @@ export const Select = (props: Props) => {
 
   useOnClickOutside(ref, () => setOpened(false));
 
-  const handleChange = useCallback((option: Option) => () => {
-    onChange(option);
-    toggleOpen();
-  }, [onChange, opened]);
   const toggleOpen = useCallback(() => {
     setOpened(!opened);
   }, [opened]);
+
+  const handleChange = useCallback((option: Option) => () => {
+    onChange(option);
+    toggleOpen();
+  }, [toggleOpen, onChange]);
 
   return (
     <div className={[styles.wrapper, className, disabled ? styles.disabled : ''].join(' ')}>
