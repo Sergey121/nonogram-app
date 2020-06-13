@@ -35,6 +35,11 @@ function parseText(text: string) {
   return text.replace(/(\]|\})[^\d\]\}]+/g, '\n').replace(/[^\d\n]+/g, '  ').replace(/[ \t]*\n[ \t]*/g, '\n').trim();
 }
 
+type Hovered = {
+  direction: 'row' | 'column';
+  index: number;
+};
+
 export const Grid = () => {
   const dispatch = useDispatch();
   const { columns, rows, running, speed, clear, selectedOption } = useSelector((state: RootState) => state.app);
@@ -45,6 +50,7 @@ export const Grid = () => {
   const [maxRowsHeight, setMaxRowsHeight] = useState<Array<number>>([]);
   const [rowsInput, setRowsInput] = useState('');
   const [columnsInput, setColumnsInput] = useState('');
+  const [hovered, setHovered] = useState<Hovered | null>(null);
 
   useEffect(() => {
     if (!columns || !rows) {
@@ -158,6 +164,45 @@ export const Grid = () => {
     }),
   }) : {};
 
+  const handleClearHovered = useCallback(() => {
+    setHovered(null);
+  }, [setHovered]);
+
+  const handleSetHovered = useCallback((direction, index) => {
+    return () => {
+      setHovered({
+        direction,
+        index,
+      });
+    };
+  }, [setHovered]);
+
+  const handleResolveRow = useCallback((direction, index) => {
+    return () => {
+      if (!rows || !columns) {
+        return;
+      }
+
+      try {
+        if (direction === 'column') {
+          const row = createRowFromColumn(field, index);
+          const colDefinition = columns[index];
+          const result = tryResolveRow(row, colDefinition);
+          applyColumnResult(field, index, result);
+          setField(field.slice());
+        } else {
+          const row = field[index];
+          const rowDefinition = rows[index];
+          const result = tryResolveRow(row, rowDefinition);
+          field.splice(index, 1, result);
+          setField(field.slice());
+        }
+      } catch (e) {
+        alert(e.message);
+      }
+    };
+  }, [field, rows, columns]);
+
   const TableHeader = useCallback(() => {
     if (!columns) {
       return null;
@@ -173,14 +218,14 @@ export const Grid = () => {
     });
 
     return (
-      <table className={styles.numberTable}>
+      <table className={styles.numberTable} onMouseLeave={handleClearHovered}>
         <tbody>
         {maxColumnHeight.map((headerRow, headerIndex) => {
           return (
             <tr key={headerIndex}>
               {reversed.map((column, colIndex) => {
                 return (
-                  <td key={colIndex} className={styles.numberCell}>
+                  <td key={colIndex} className={styles.numberCell} onMouseOver={handleSetHovered('column', colIndex)} onClick={handleResolveRow('column', colIndex)}>
                     {column[headerIndex] !== undefined ? column[headerIndex] : ''}
                   </td>
                 )
@@ -208,11 +253,11 @@ export const Grid = () => {
     });
 
     return (
-      <table className={styles.numberTable}>
+      <table className={styles.numberTable} onMouseLeave={handleClearHovered}>
         <tbody>
         {reversed.map((row, rowIndex) => {
           return (
-            <tr key={rowIndex}>
+            <tr key={rowIndex} onMouseOver={handleSetHovered('row', rowIndex)} onClick={handleResolveRow('row', rowIndex)}>
               {maxRowsHeight.map((rowHeight, rowHeightIndex) => {
                 return (
                   <td key={rowHeightIndex} className={styles.numberCell}>
@@ -320,6 +365,16 @@ export const Grid = () => {
 
                       if (col === 1) {
                         classes.push(styles.filled);
+                      }
+
+                      if (hovered) {
+                        if (hovered.direction === 'row' && hovered.index === rowIndex) {
+                          classes.push(styles.hovered);
+                        }
+
+                        if (hovered.direction === 'column' && hovered.index === colIndex) {
+                          classes.push(styles.hovered);
+                        }
                       }
                       return (
                         <td key={colIndex} className={classes.join(' ')} onClick={handleClickCell(rowIndex, colIndex, col)}>

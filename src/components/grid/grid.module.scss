@@ -17,6 +17,7 @@ $cellSize: 25px;
   max-width: $cellSize;
   box-sizing: border-box;
 
+  &.hovered,
   &:hover {
     background-color: lighten($bg, 10);
   }
