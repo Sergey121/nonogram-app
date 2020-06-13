@@ -1,11 +1,11 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "5ab30a9b8d6608c38e7e4acc98540bd7",
+    "revision": "cbee9da1fdaa81416f31fcb2e26f3f4e",
     "url": "/nonogram-app/index.html"
   },
   {
-    "revision": "84de032c0ffe850dc0fa",
-    "url": "/nonogram-app/static/css/main.c8d996f1.chunk.css"
+    "revision": "445a6175c2968fe45107",
+    "url": "/nonogram-app/static/css/main.6a9a8109.chunk.css"
   },
   {
     "revision": "c9c99dcccb2d287de854",
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/nonogram-app/static/js/2.6861006c.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "84de032c0ffe850dc0fa",
-    "url": "/nonogram-app/static/js/main.7d45eb90.chunk.js"
+    "revision": "445a6175c2968fe45107",
+    "url": "/nonogram-app/static/js/main.393fa49f.chunk.js"
   },
   {
     "revision": "280f7df5b9df6b4ca78e",
