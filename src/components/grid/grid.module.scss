@@ -16,6 +16,10 @@ $cellSize: 25px;
   min-width: $cellSize;
   max-width: $cellSize;
   box-sizing: border-box;
+
+  &:hover {
+    background-color: lighten($bg, 10);
+  }
 }
 
 .numberTable {

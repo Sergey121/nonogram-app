@@ -2,11 +2,12 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './grid.module.scss';
 import { RootState } from '../../store';
-import { FieldType } from '../../models';
+import { FieldPossibleValues, FieldType } from '../../models';
 import {
   applyColumnResult,
   createField,
-  createRowFromColumn, every,
+  createRowFromColumn,
+  every,
   isArraysEqual,
   sum,
   tryResolveRow
@@ -248,6 +249,33 @@ export const Grid = () => {
     }
   }, [dispatch, rowsInput, columnsInput]);
 
+  const handleClickCell = useCallback((rowIndex, columnIndex, value) => {
+    return () => {
+      let newValue;
+      switch (value) {
+        case FieldPossibleValues.UNDEFINED: {
+          newValue = FieldPossibleValues.BLACK_SQUARE;
+          break;
+        }
+        case FieldPossibleValues.BLACK_SQUARE: {
+          newValue = FieldPossibleValues.WHITE_SQUARE;
+          break;
+        }
+        case FieldPossibleValues.WHITE_SQUARE: {
+          newValue = FieldPossibleValues.UNDEFINED;
+          break;
+        }
+        default: {
+          newValue = value;
+        }
+      }
+      const row = field[rowIndex];
+      row[columnIndex] = newValue;
+      field.splice(rowIndex, 1, row)
+      setField(field.slice());
+    };
+  }, [field]);
+
   return (
     <>
       {selectedOption.value === -1 && (
@@ -294,7 +322,7 @@ export const Grid = () => {
                         classes.push(styles.filled);
                       }
                       return (
-                        <td key={colIndex} className={classes.join(' ')}>
+                        <td key={colIndex} className={classes.join(' ')} onClick={handleClickCell(rowIndex, colIndex, col)}>
                           {col === -1 && <div className={styles.dotWrapper}>
                             <div className={styles.dot}/>
                           </div>}
